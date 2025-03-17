@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Instagram, Facebook, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import Logo from './Logo';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -13,9 +13,9 @@ const Footer = () => {
             {/* Column 1 - Brand & Social */}
             <div>
               <a href="#" className="inline-block">
-                <h2 className="text-2xl font-serif text-sage-800 font-semibold mb-6">GreenPlate</h2>
+                <Logo />
               </a>
-              <p className="text-sage-600 mb-6 max-w-xs">
+              <p className="text-sage-600 mb-6 max-w-xs mt-4">
                 Premium meal subscriptions crafted with care for specific nutritional needs.
               </p>
               <div className="flex space-x-4">

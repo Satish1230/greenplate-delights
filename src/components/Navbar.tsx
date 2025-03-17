@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Logo from './Logo';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -31,7 +32,9 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <nav className="flex items-center justify-between">
-          <a href="#" className="text-2xl font-serif text-sage-800 font-semibold">GreenPlate</a>
+          <a href="#" className="flex items-center">
+            <Logo />
+          </a>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
