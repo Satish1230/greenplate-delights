@@ -17,7 +17,7 @@ const planData = [
       'Easily digestible ingredients',
       'Incorporates traditional postnatal recipes'
     ],
-    image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: '/lovable-uploads/f38eb532-c878-4349-aabb-8dec09e854e8.png',
     color: 'bg-[#f8efe6]'
   },
   {
@@ -33,7 +33,7 @@ const planData = [
       'No added sugars or preservatives',
       'Portion controlled for optimal results'
     ],
-    image: 'https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: '/lovable-uploads/92eb2784-7239-4360-9db0-48fc75fbec7d.png',
     color: 'bg-[#e6f5ed]'
   },
   {
@@ -49,7 +49,7 @@ const planData = [
       'Elegant presentation',
       'Sustainable packaging'
     ],
-    image: 'https://images.unsplash.com/photo-1543352634-a1c51d9f1fa7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: '/lovable-uploads/074cd783-70c1-4844-8789-d031df552123.png',
     color: 'bg-[#e6f0f8]'
   }
 ];

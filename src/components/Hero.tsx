@@ -95,8 +95,8 @@ const Hero = () => {
           >
             <div className="relative w-full h-[500px] rounded-2xl overflow-hidden bg-sage-100">
               <img 
-                src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                alt="Healthy meal with fresh ingredients" 
+                src="/lovable-uploads/1e3667cf-a204-4691-ad94-0ec2f574aa40.png"
+                alt="Premium Indian thali with various dishes" 
                 className="w-full h-full object-cover object-center"
                 loading="eager"
               />
@@ -105,8 +105,8 @@ const Hero = () => {
             {/* Floating elements */}
             <div className="absolute -left-6 -bottom-6 w-40 h-40 rounded-2xl overflow-hidden border-4 border-white shadow-xl">
               <img 
-                src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
-                alt="Chef preparing meal" 
+                src="/lovable-uploads/92eb2784-7239-4360-9db0-48fc75fbec7d.png"
+                alt="Delicious curry with naan" 
                 className="w-full h-full object-cover object-center"
                 loading="lazy"
               />
