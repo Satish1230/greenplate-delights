@@ -51,3 +51,10 @@ export const staggeredFadeIn = (isInView: boolean, index: number) => {
     ? `opacity-100 translate-y-0 transition-all duration-700 ease-out delay-[${delay}ms]` 
     : 'opacity-0 translate-y-10';
 };
+
+// Slide animations for testimonials
+export const slideInRight = () => 'animate-slide-in-right';
+export const slideOutRight = () => 'animate-slide-out-right';
+
+// Scale animation for hover effects
+export const scaleOnHover = 'transition-transform duration-200 hover:scale-105';

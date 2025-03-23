@@ -1,8 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { useInView } from '@/utils/animations';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 
+// Testimonial data with additional profile images
 const testimonials = [
   {
     id: 1,
@@ -48,15 +50,53 @@ const testimonials = [
 
 const Testimonials = () => {
   const { ref, isInView } = useInView();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  
-  const nextTestimonial = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
-  
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [transitionClass, setTransitionClass] = useState('');
+  const [initialRender, setInitialRender] = useState(true);
+
+  // Navigate to previous testimonial with animation
   const prevTestimonial = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    if (selectedIndex === 0) return;
+    setTransitionClass('animate-slide-out-right');
+    
+    setTimeout(() => {
+      setSelectedIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+      setTransitionClass('animate-slide-in-right');
+      setInitialRender(false);
+    }, 300);
   };
+  
+  // Navigate to next testimonial with animation
+  const nextTestimonial = () => {
+    if (selectedIndex === testimonials.length - 1) return;
+    setTransitionClass('animate-slide-out-right');
+    
+    setTimeout(() => {
+      setSelectedIndex((prev) => (prev + 1) % testimonials.length);
+      setTransitionClass('animate-slide-in-right');
+      setInitialRender(false);
+    }, 300);
+  };
+
+  // Handle direct selection of a testimonial by clicking on avatar
+  const handleProfileSelect = (index) => {
+    if (index === selectedIndex) return;
+    
+    setTransitionClass('animate-slide-out-right');
+    setTimeout(() => {
+      setSelectedIndex(index);
+      setTransitionClass('animate-slide-in-right');
+      setInitialRender(false);
+    }, 300);
+  };
+
+  // Reset animation class when component mounts
+  useEffect(() => {
+    if (initialRender) {
+      setTransitionClass('animate-fade-in');
+      setInitialRender(false);
+    }
+  }, [initialRender]);
   
   return (
     <section id="testimonials" className="py-20 md:py-28 bg-white relative overflow-hidden">
@@ -78,75 +118,117 @@ const Testimonials = () => {
           </p>
         </div>
         
-        <div className={`max-w-4xl mx-auto transition-all duration-1000 ease-out ${isInView ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="relative">
-            {/* Large quote icon */}
-            <div className="absolute -top-10 -left-8 text-sage-100">
-              <Quote size={80} />
-            </div>
-            
-            {/* Testimonial card */}
-            <div className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-sage-100 relative z-10">
+        <div className={`max-w-5xl mx-auto transition-all duration-1000 ease-out ${isInView ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="relative flex flex-col items-center">
+            {/* Main testimonial card */}
+            <div className={`bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-sage-100 relative z-10 w-full max-w-4xl ${transitionClass}`}>
+              {/* Large quote icon */}
+              <div className="absolute -top-10 -left-8 text-sage-100">
+                <Quote size={80} />
+              </div>
+              
               <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
                 <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden shrink-0 border-2 border-sage-100">
                   <img 
-                    src={testimonials[currentIndex].avatar} 
-                    alt={testimonials[currentIndex].name} 
+                    src={testimonials[selectedIndex].avatar} 
+                    alt={testimonials[selectedIndex].name} 
                     className="w-full h-full object-cover"
                   />
                 </div>
                 
                 <div className="flex-1">
                   <div className="flex gap-1 mb-3">
-                    {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
+                    {[...Array(testimonials[selectedIndex].rating)].map((_, i) => (
                       <Star key={i} size={18} className="fill-sage-500 text-sage-500" />
                     ))}
                   </div>
                   
                   <blockquote className="text-lg md:text-xl text-sage-800 font-serif mb-6">
-                    "{testimonials[currentIndex].content}"
+                    "{testimonials[selectedIndex].content}"
                   </blockquote>
                   
                   <div>
-                    <p className="font-medium text-sage-800">{testimonials[currentIndex].name}</p>
-                    <p className="text-sage-600 text-sm">{testimonials[currentIndex].role}</p>
+                    <p className="font-medium text-sage-800">{testimonials[selectedIndex].name}</p>
+                    <p className="text-sage-600 text-sm">{testimonials[selectedIndex].role}</p>
                   </div>
                 </div>
               </div>
             </div>
             
-            {/* Navigation buttons */}
-            <div className="flex justify-center mt-8 gap-4">
-              <button 
-                onClick={prevTestimonial}
-                className="w-10 h-10 rounded-full bg-white border border-sage-200 hover:border-sage-300 flex items-center justify-center text-sage-700 transition-all"
-                aria-label="Previous testimonial"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              
-              <div className="flex gap-2 items-center">
-                {testimonials.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`w-2.5 h-2.5 rounded-full transition-all ${index === currentIndex ? 'bg-sage-500 scale-125' : 'bg-sage-200'}`}
-                    aria-label={`Go to testimonial ${index + 1}`}
-                  />
-                ))}
-              </div>
-              
-              <button 
-                onClick={nextTestimonial}
-                className="w-10 h-10 rounded-full bg-white border border-sage-200 hover:border-sage-300 flex items-center justify-center text-sage-700 transition-all"
-                aria-label="Next testimonial"
-              >
-                <ChevronRight size={20} />
-              </button>
+            {/* Profile images carousel */}
+            <div className="mt-12 w-full">
+              <Carousel className="w-full">
+                <div className="flex justify-between items-center mb-6">
+                  <button 
+                    onClick={prevTestimonial}
+                    className={`w-10 h-10 rounded-full bg-white border border-sage-200 hover:border-sage-300 flex items-center justify-center text-sage-700 transition-all ${selectedIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}`}
+                    aria-label="Previous testimonial"
+                    disabled={selectedIndex === 0}
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  
+                  <div className="text-sage-600 text-sm font-medium">
+                    {selectedIndex + 1} of {testimonials.length}
+                  </div>
+                  
+                  <button 
+                    onClick={nextTestimonial}
+                    className={`w-10 h-10 rounded-full bg-white border border-sage-200 hover:border-sage-300 flex items-center justify-center text-sage-700 transition-all ${selectedIndex === testimonials.length - 1 ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}`}
+                    aria-label="Next testimonial"
+                    disabled={selectedIndex === testimonials.length - 1}
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+                
+                <CarouselContent className="px-4">
+                  {testimonials.map((item, index) => (
+                    <CarouselItem key={item.id} className="basis-1/5 md:basis-1/5 lg:basis-1/5 xl:basis-1/5 pl-2 pr-2">
+                      <div 
+                        className={`cursor-pointer transition-all duration-200 ${selectedIndex === index ? 'scale-110' : 'opacity-60 hover:opacity-80'}`}
+                        onClick={() => handleProfileSelect(index)}
+                      >
+                        <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${selectedIndex === index ? 'border-sage-500' : 'border-sage-200'}`}>
+                          <img 
+                            src={item.avatar} 
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        {selectedIndex === index && (
+                          <div className="h-1 bg-sage-500 mt-2 rounded-full mx-auto w-6"></div>
+                        )}
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Additional CSS for animations */}
+      <style jsx global>{`
+        @keyframes slide-out-right {
+          0% { opacity: 1; transform: translateX(0); }
+          100% { opacity: 0; transform: translateX(-50px); }
+        }
+        
+        @keyframes slide-in-right {
+          0% { opacity: 0; transform: translateX(50px); }
+          100% { opacity: 1; transform: translateX(0); }
+        }
+        
+        .animate-slide-out-right {
+          animation: slide-out-right 0.3s forwards;
+        }
+        
+        .animate-slide-in-right {
+          animation: slide-in-right 0.3s forwards;
+        }
+      `}</style>
     </section>
   );
 };
