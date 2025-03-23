@@ -209,8 +209,8 @@ const Testimonials = () => {
         </div>
       </div>
 
-      {/* Additional CSS for animations */}
-      <style jsx global>{`
+      {/* Add the animation CSS as a class to the tailwind config or via a CSS file */}
+      <style dangerouslySetInnerHTML={{__html: `
         @keyframes slide-out-right {
           0% { opacity: 1; transform: translateX(0); }
           100% { opacity: 0; transform: translateX(-50px); }
@@ -228,7 +228,7 @@ const Testimonials = () => {
         .animate-slide-in-right {
           animation: slide-in-right 0.3s forwards;
         }
-      `}</style>
+      `}} />
     </section>
   );
 };

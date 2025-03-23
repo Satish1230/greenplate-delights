@@ -53,8 +53,11 @@ export const staggeredFadeIn = (isInView: boolean, index: number) => {
 };
 
 // Slide animations for testimonials
-export const slideInRight = () => 'animate-slide-in-right';
-export const slideOutRight = () => 'animate-slide-out-right';
+export const slideInRight = (isInView: boolean) => 
+  isInView ? 'animate-slide-in-right' : 'opacity-0';
+
+export const slideOutRight = (isInView: boolean) => 
+  isInView ? 'animate-slide-out-right' : 'opacity-0';
 
 // Scale animation for hover effects
 export const scaleOnHover = 'transition-transform duration-200 hover:scale-105';
