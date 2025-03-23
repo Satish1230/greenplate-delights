@@ -61,3 +61,7 @@ export const slideOutRight = (isInView: boolean) =>
 
 // Scale animation for hover effects
 export const scaleOnHover = 'transition-transform duration-200 hover:scale-105';
+
+// Accordion animations
+export const accordionOpen = 'transition-all duration-300 ease-out';
+export const accordionClosed = 'transition-all duration-300 ease-in';

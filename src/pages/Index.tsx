@@ -8,6 +8,7 @@ import Testimonials from '@/components/Testimonials';
 import About from '@/components/About';
 import CallToAction from '@/components/CallToAction';
 import ScratchCard from '@/components/ScratchCard';
+import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -45,6 +46,7 @@ const Index = () => {
         <SubscriptionSection />
         <About />
         <Testimonials />
+        <FAQSection />
         <CallToAction />
         <ScratchCard />
       </main>
