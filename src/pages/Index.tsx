@@ -7,7 +7,9 @@ import SubscriptionSection from '@/components/SubscriptionSection';
 import Testimonials from '@/components/Testimonials';
 import About from '@/components/About';
 import CallToAction from '@/components/CallToAction';
+import ScratchCard from '@/components/ScratchCard';
 import Footer from '@/components/Footer';
+import { Toaster } from '@/components/ui/toaster';
 
 const Index = () => {
   // Smooth scroll to section when clicking on navigation links
@@ -44,8 +46,10 @@ const Index = () => {
         <About />
         <Testimonials />
         <CallToAction />
+        <ScratchCard />
       </main>
       <Footer />
+      <Toaster />
     </div>
   );
 };
