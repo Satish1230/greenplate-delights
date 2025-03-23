@@ -52,16 +52,25 @@ export const staggeredFadeIn = (isInView: boolean, index: number) => {
     : 'opacity-0 translate-y-10';
 };
 
-// Slide animations for testimonials
+// Slide animations for testimonials and category sections
 export const slideInRight = (isInView: boolean) => 
   isInView ? 'animate-slide-in-right' : 'opacity-0';
 
 export const slideOutRight = (isInView: boolean) => 
   isInView ? 'animate-slide-out-right' : 'opacity-0';
 
-// Scale animation for hover effects
+// Interactive element animations
+export const pulseOnHover = 'transition-transform duration-300 hover:scale-105 hover:shadow-md';
 export const scaleOnHover = 'transition-transform duration-200 hover:scale-105';
+export const highlightOnHover = 'transition-colors duration-200 hover:bg-sage-100';
 
 // Accordion animations
 export const accordionOpen = 'transition-all duration-300 ease-out';
 export const accordionClosed = 'transition-all duration-300 ease-in';
+
+// Text animations
+export const typewriter = 'animate-typing overflow-hidden whitespace-nowrap border-r-4 border-sage-500';
+
+// Card animations
+export const cardFlip = 'perspective-1000 transition-transform duration-500 transform-style-3d';
+export const cardHover = 'transition-all duration-300 hover:-translate-y-2 hover:shadow-lg';

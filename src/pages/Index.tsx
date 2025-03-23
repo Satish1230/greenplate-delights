@@ -11,6 +11,7 @@ import ScratchCard from '@/components/ScratchCard';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
+import AreYouSection from '@/components/AreYouSection';
 
 const Index = () => {
   // Smooth scroll to section when clicking on navigation links
@@ -43,6 +44,7 @@ const Index = () => {
       <main>
         <Hero />
         <FeaturedPlans />
+        <AreYouSection />
         <SubscriptionSection />
         <About />
         <Testimonials />
