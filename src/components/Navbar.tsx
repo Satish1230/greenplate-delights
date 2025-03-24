@@ -1,12 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from './Logo';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,9 +23,31 @@ const Navbar = () => {
       }
     };
 
+    // Check if user is logged in
+    const user = localStorage.getItem('user');
+    setIsLoggedIn(!!user);
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out",
+    });
+    navigate('/');
+  };
+
+  const handleDashboard = () => {
+    navigate('/dashboard');
+  };
 
   return (
     <header 
@@ -32,7 +60,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <nav className="flex items-center justify-between">
-          <a href="#" className="flex items-center">
+          <a href="/" className="flex items-center">
             <Logo />
           </a>
           
@@ -42,12 +70,32 @@ const Navbar = () => {
             <a href="#about" className="text-sage-700 hover:text-sage-900 transition-colors">Our Story</a>
             <a href="#testimonials" className="text-sage-700 hover:text-sage-900 transition-colors">Testimonials</a>
             <a href="#contact" className="text-sage-700 hover:text-sage-900 transition-colors">Contact</a>
-            <a 
-              href="#subscribe" 
-              className="bg-sage-500 hover:bg-sage-600 text-white px-5 py-2 rounded-md font-medium transition-all"
-            >
-              Subscribe Now
-            </a>
+            
+            {isLoggedIn ? (
+              <>
+                <Button 
+                  variant="ghost"
+                  className="text-sage-700 hover:text-sage-900 transition-colors"
+                  onClick={handleDashboard}
+                >
+                  My Dashboard
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="border-sage-500 text-sage-700 hover:bg-sage-100"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={18} className="mr-2" /> Logout
+                </Button>
+              </>
+            ) : (
+              <Button 
+                className="bg-sage-500 hover:bg-sage-600 text-white"
+                onClick={handleLogin}
+              >
+                <LogIn size={18} className="mr-2" /> Sign In
+              </Button>
+            )}
           </div>
           
           {/* Mobile menu button */}
@@ -91,13 +139,39 @@ const Navbar = () => {
               >
                 Contact
               </a>
-              <a 
-                href="#subscribe" 
-                className="bg-sage-500 hover:bg-sage-600 text-white px-5 py-2 rounded-md font-medium transition-all text-center"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Subscribe Now
-              </a>
+              
+              {isLoggedIn ? (
+                <>
+                  <button 
+                    className="text-sage-700 hover:text-sage-900 py-2 transition-colors text-left"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      handleDashboard();
+                    }}
+                  >
+                    My Dashboard
+                  </button>
+                  <button 
+                    className="bg-sage-100 text-sage-700 hover:bg-sage-200 py-2 px-4 rounded transition-colors text-left flex items-center"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    <LogOut size={18} className="mr-2" /> Logout
+                  </button>
+                </>
+              ) : (
+                <button 
+                  className="bg-sage-500 hover:bg-sage-600 text-white py-2 px-4 rounded transition-colors flex items-center justify-center"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    handleLogin();
+                  }}
+                >
+                  <LogIn size={18} className="mr-2" /> Sign In
+                </button>
+              )}
             </div>
           </div>
         )}
