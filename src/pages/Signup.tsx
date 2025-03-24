@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
+  phone: z.string().min(10, { message: "Phone number must be at least 10 digits" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
   confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, {
@@ -22,34 +25,44 @@ const formSchema = z.object({
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { register } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // In a real app, this would be an API call to register
-    // For demo purposes, we'll just simulate a successful registration
-    localStorage.setItem("user", JSON.stringify({
-      id: "user-" + Math.floor(Math.random() * 1000),
-      name: values.name,
-      email: values.email,
-      isLoggedIn: true,
-    }));
-    
-    toast({
-      title: "Registration Successful",
-      description: "Welcome to Mealawe! You can now subscribe to meal plans.",
-    });
-    
-    // Redirect to dashboard
-    navigate("/dashboard");
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const success = await register(
+        values.name,
+        values.email,
+        values.phone,
+        values.password
+      );
+
+      if (success) {
+        // Redirect to dashboard
+        navigate("/dashboard");
+      } else {
+        // Error handled in the register function through toast
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,6 +76,12 @@ const Signup = () => {
             Join Mealawe and start your meal subscription
           </p>
         </div>
+        
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -88,6 +107,20 @@ const Signup = () => {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input placeholder="your.email@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="1234567890" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -122,8 +155,12 @@ const Signup = () => {
               )}
             />
             
-            <Button type="submit" className="w-full bg-sage-600 hover:bg-sage-700">
-              Sign Up
+            <Button 
+              type="submit" 
+              className="w-full bg-sage-600 hover:bg-sage-700"
+              disabled={loading}
+            >
+              {loading ? "Signing Up..." : "Sign Up"}
             </Button>
           </form>
         </Form>

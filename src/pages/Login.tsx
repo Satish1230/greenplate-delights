@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Calendar, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -18,6 +20,9 @@ const formSchema = z.object({
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login, checkUserExists } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -27,25 +32,33 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // In a real app, this would be an API call to authenticate
-    // For demo purposes, we'll just simulate a successful login
-    if (values.email && values.password) {
-      // Store user data in localStorage
-      localStorage.setItem("user", JSON.stringify({
-        id: "user-123",
-        email: values.email,
-        name: "Demo User",
-        isLoggedIn: true,
-      }));
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // First check if the user exists
+      const userExists = await checkUserExists(values.email);
       
-      toast({
-        title: "Login Successful",
-        description: "Welcome back to Mealawe!",
-      });
+      if (!userExists) {
+        setError("User not registered. Please sign up first.");
+        setLoading(false);
+        return;
+      }
       
-      // Redirect to dashboard
-      navigate("/dashboard");
+      // Attempt to login
+      const success = await login(values.email, values.password);
+      
+      if (success) {
+        // Redirect to dashboard
+        navigate("/dashboard");
+      } else {
+        // Error handled in the login function through toast
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -60,6 +73,12 @@ const Login = () => {
             Sign in to manage your meal subscriptions
           </p>
         </div>
+        
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -91,8 +110,13 @@ const Login = () => {
               )}
             />
             
-            <Button type="submit" className="w-full bg-sage-600 hover:bg-sage-700">
-              <LogIn className="mr-2 h-4 w-4" /> Sign In
+            <Button 
+              type="submit" 
+              className="w-full bg-sage-600 hover:bg-sage-700"
+              disabled={loading}
+            >
+              <LogIn className="mr-2 h-4 w-4" /> 
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
         </Form>
