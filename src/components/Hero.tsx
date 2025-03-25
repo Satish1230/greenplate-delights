@@ -1,6 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Sprout, Heart, Clock } from 'lucide-react';
+import { ArrowRight, Sprout, Heart, Clock, Award } from 'lucide-react';
 import { useInView } from '@/utils/animations';
+import { Badge } from '@/components/ui/badge';
 
 const Hero = () => {
   const { ref, isInView } = useInView();
@@ -25,11 +27,20 @@ const Hero = () => {
         >
           {/* Left column content */}
           <div className="max-w-xl">
-            <span 
-              className={`inline-block px-4 py-1.5 bg-sage-100 text-sage-700 rounded-full text-sm font-medium mb-6 transition-all duration-700 ease-out ${isInView ? 'opacity-100' : 'opacity-0 -translate-y-4'}`}
-            >
-              Premium Meal Subscriptions
-            </span>
+            <div className="flex flex-wrap gap-2 mb-6">
+              <span 
+                className={`inline-block px-4 py-1.5 bg-sage-100 text-sage-700 rounded-full text-sm font-medium transition-all duration-700 ease-out ${isInView ? 'opacity-100' : 'opacity-0 -translate-y-4'}`}
+              >
+                Premium Meal Subscriptions
+              </span>
+              
+              <Badge 
+                className={`bg-red-50 text-red-700 border border-red-200 flex items-center gap-1 transition-all duration-700 ease-out ${isInView ? 'opacity-100' : 'opacity-0 -translate-y-4'}`}
+                variant="outline"
+              >
+                <Award size={14} className="text-red-600" /> FSSAI Certified
+              </Badge>
+            </div>
             
             <h1 
               className={`text-4xl md:text-5xl xl:text-6xl font-serif font-medium leading-tight text-sage-800 mb-6 transition-all duration-700 delay-100 ease-out ${isInView ? 'opacity-100' : 'opacity-0 -translate-y-4'}`}
@@ -116,6 +127,14 @@ const Hero = () => {
               <div className="text-center">
                 <span className="block text-3xl font-serif font-bold text-sage-800">97%</span>
                 <span className="text-sm text-sage-600">Customer Satisfaction</span>
+              </div>
+            </div>
+            
+            {/* FSSAI Badge */}
+            <div className="absolute right-8 bottom-8 bg-white p-3 rounded-full shadow-lg">
+              <div className="flex items-center justify-center bg-red-50 w-16 h-16 rounded-full border-2 border-red-100">
+                <Award className="h-8 w-8 text-red-600" />
+                <span className="absolute -bottom-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full whitespace-nowrap">FSSAI Certified</span>
               </div>
             </div>
           </div>

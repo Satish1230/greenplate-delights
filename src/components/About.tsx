@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { CheckCircle, Leaf, ShieldCheck, Utensils } from 'lucide-react';
+import { CheckCircle, Leaf, ShieldCheck, Utensils, Award } from 'lucide-react';
 import { useInView } from '@/utils/animations';
+import CounterAnimation from './CounterAnimation';
 
 const About = () => {
   const { ref, isInView } = useInView();
@@ -59,7 +60,8 @@ const About = () => {
                 { icon: Leaf, text: 'Organic, local ingredients sourced from trusted farms' },
                 { icon: Utensils, text: 'Prepared by expert chefs with culinary training' },
                 { icon: CheckCircle, text: 'Nutritionist-verified meal plans for specific needs' },
-                { icon: ShieldCheck, text: 'Strict quality control and safety standards' }
+                { icon: ShieldCheck, text: 'Strict quality control and safety standards' },
+                { icon: Award, text: 'FSSAI certified for food safety and quality' }
               ].map((item, index) => (
                 <li 
                   key={index} 
@@ -75,23 +77,32 @@ const About = () => {
         </div>
       </div>
       
-      {/* Stats section */}
+      {/* Stats section with counter animation */}
       <div ref={ref2} className="bg-sage-50 py-16 mt-20 relative">
         <div className="absolute inset-0 bg-noise opacity-30"></div>
         <div className="section-container relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { value: '10,000+', label: 'Meals Delivered Weekly' },
-              { value: '98%', label: 'Customer Satisfaction' },
-              { value: '25+', label: 'Specialized Diet Options' },
-              { value: '100%', label: 'Eco-Friendly Packaging' }
+              { value: '10000', label: 'Meals Delivered Weekly' },
+              { value: '98', label: 'Customer Satisfaction', suffix: '%' },
+              { value: '25', label: 'Specialized Diet Options', suffix: '+' },
+              { value: '100', label: 'Eco-Friendly Packaging', suffix: '%' }
             ].map((stat, index) => (
               <div 
                 key={index}
                 className={`text-center transition-all duration-700 ease-out ${isInView2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <div className="text-4xl font-serif font-bold text-sage-800 mb-2">{stat.value}</div>
+                <div className="text-4xl font-serif font-bold text-sage-800 mb-2">
+                  {isInView2 && (
+                    <CounterAnimation 
+                      end={parseInt(stat.value)} 
+                      duration={2000} 
+                      delay={index * 200}
+                      suffix={stat.suffix || ''} 
+                    />
+                  )}
+                </div>
                 <div className="text-sage-600">{stat.label}</div>
               </div>
             ))}

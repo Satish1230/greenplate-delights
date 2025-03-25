@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from "@/hooks/use-toast";
+import { getCollection, disconnectFromMongoDB } from '@/utils/mongodb';
 
 interface User {
   id: string;
@@ -21,137 +22,211 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// This is a mock database function to simulate MongoDB operations
-// In a real app, you would use actual MongoDB client connection
-const mockDb = {
-  users: [] as Array<{id: string, name: string, email: string, phone: string, password: string}>,
-  
-  async findUserByEmail(email: string) {
-    return this.users.find(user => user.email === email);
-  },
-  
-  async registerUser(name: string, email: string, phone: string, password: string) {
-    const id = `user-${Math.floor(Math.random() * 10000)}`;
-    const newUser = { id, name, email, phone, password };
-    this.users.push(newUser);
-    return newUser;
-  }
+// Fallback to localStorage if MongoDB connection fails
+const saveMockData = (users: any[]) => {
+  localStorage.setItem('mockUsers', JSON.stringify(users));
 };
 
 // Load mock data from localStorage
 const loadMockData = () => {
   const storedUsers = localStorage.getItem('mockUsers');
-  if (storedUsers) {
-    mockDb.users = JSON.parse(storedUsers);
-  }
-};
-
-// Save mock data to localStorage
-const saveMockData = () => {
-  localStorage.setItem('mockUsers', JSON.stringify(mockDb.users));
+  return storedUsers ? JSON.parse(storedUsers) : [];
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [useMockDb, setUseMockDb] = useState<boolean>(false);
+  const [mockUsers, setMockUsers] = useState<any[]>([]);
 
+  // Load user from localStorage on mount
   useEffect(() => {
-    // Load mock data on component mount
-    loadMockData();
-    
-    // Check if user data exists in localStorage on mount
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const userData = JSON.parse(storedUser);
       setUser(userData);
       setIsAuthenticated(true);
     }
+
+    // Load mock data
+    const mockData = loadMockData();
+    setMockUsers(mockData);
+
+    // Test MongoDB connection
+    const testConnection = async () => {
+      try {
+        await getCollection('users');
+        setUseMockDb(false);
+        console.log("Using MongoDB for authentication");
+      } catch (error) {
+        console.error("MongoDB connection failed, using mock data:", error);
+        setUseMockDb(true);
+      }
+    };
+
+    testConnection();
+
+    // Clean up MongoDB connection on unmount
+    return () => {
+      disconnectFromMongoDB().catch(console.error);
+    };
   }, []);
 
   const checkUserExists = async (email: string): Promise<boolean> => {
-    const user = await mockDb.findUserByEmail(email);
-    return !!user;
+    try {
+      if (useMockDb) {
+        return mockUsers.some(user => user.email === email);
+      }
+
+      const usersCollection = await getCollection('users');
+      const user = await usersCollection.findOne({ email });
+      return !!user;
+    } catch (error) {
+      console.error("Error checking if user exists:", error);
+      
+      // Fallback to mock data
+      return mockUsers.some(user => user.email === email);
+    }
   };
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Find user by email
-    const foundUser = await mockDb.findUserByEmail(email);
-    
-    // Check if user exists and password matches
-    if (foundUser && foundUser.password === password) {
-      const userData = {
-        id: foundUser.id,
-        name: foundUser.name,
-        email: foundUser.email,
-        phone: foundUser.phone,
-        isLoggedIn: true,
-      };
+    try {
+      let foundUser;
       
-      setUser(userData);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userData));
+      if (useMockDb) {
+        foundUser = mockUsers.find(user => user.email === email);
+      } else {
+        const usersCollection = await getCollection('users');
+        foundUser = await usersCollection.findOne({ email });
+      }
+      
+      // Check if user exists and password matches
+      if (foundUser && foundUser.password === password) {
+        const userData = {
+          id: foundUser._id || foundUser.id,
+          name: foundUser.name,
+          email: foundUser.email,
+          phone: foundUser.phone,
+          isLoggedIn: true,
+        };
+        
+        setUser(userData);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(userData));
+        toast({
+          title: "Login Successful",
+          description: "Welcome back to GreenPlate!",
+        });
+        return true;
+      }
+      
+      // If user not found or password doesn't match
+      if (!foundUser) {
+        toast({
+          title: "Login Failed",
+          description: "User not registered. Please sign up first.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Incorrect password. Please try again.",
+          variant: "destructive",
+        });
+      }
+      
+      return false;
+    } catch (error) {
+      console.error("Login error:", error);
       toast({
-        title: "Login Successful",
-        description: "Welcome back to Mealawe!",
-      });
-      return true;
-    }
-    
-    // If user not found or password doesn't match
-    if (!foundUser) {
-      toast({
-        title: "Login Failed",
-        description: "User not registered. Please sign up first.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Login Failed",
-        description: "Incorrect password. Please try again.",
-        variant: "destructive",
-      });
-    }
-    
-    return false;
-  };
-
-  const register = async (name: string, email: string, phone: string, password: string): Promise<boolean> => {
-    // Check if user already exists
-    const existingUser = await mockDb.findUserByEmail(email);
-    if (existingUser) {
-      toast({
-        title: "Registration Failed",
-        description: "User with this email already exists",
+        title: "Login Error",
+        description: "An error occurred during login. Please try again.",
         variant: "destructive",
       });
       return false;
     }
-    
-    // Register new user
-    const newUser = await mockDb.registerUser(name, email, phone, password);
-    
-    // Save mock data
-    saveMockData();
-    
-    // Auto-login after successful registration
-    const userData = {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      phone: newUser.phone,
-      isLoggedIn: true,
-    };
-    
-    setUser(userData);
-    setIsAuthenticated(true);
-    localStorage.setItem('user', JSON.stringify(userData));
-    
-    toast({
-      title: "Registration Successful",
-      description: "Welcome to Mealawe! You can now subscribe to meal plans.",
-    });
-    
-    return true;
+  };
+
+  const register = async (name: string, email: string, phone: string, password: string): Promise<boolean> => {
+    try {
+      // Check if user already exists
+      const userExists = await checkUserExists(email);
+      
+      if (userExists) {
+        toast({
+          title: "Registration Failed",
+          description: "User with this email already exists",
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      // Create new user object
+      const newUser = {
+        name,
+        email,
+        phone,
+        password,
+        createdAt: new Date(),
+      };
+      
+      // Save to database or mock storage
+      if (useMockDb) {
+        // Generate an ID
+        const id = `user-${Math.floor(Math.random() * 10000)}`;
+        const userWithId = { ...newUser, id };
+        
+        // Update mock users array
+        const updatedUsers = [...mockUsers, userWithId];
+        setMockUsers(updatedUsers);
+        saveMockData(updatedUsers);
+        
+        // Set user data for frontend
+        const userData = {
+          id,
+          name,
+          email,
+          phone,
+          isLoggedIn: true,
+        };
+        
+        setUser(userData);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(userData));
+      } else {
+        // Save to MongoDB
+        const usersCollection = await getCollection('users');
+        const result = await usersCollection.insertOne(newUser);
+        
+        // Set user data for frontend
+        const userData = {
+          id: result.insertedId.toString(),
+          name,
+          email,
+          phone,
+          isLoggedIn: true,
+        };
+        
+        setUser(userData);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(userData));
+      }
+      
+      toast({
+        title: "Registration Successful",
+        description: "Welcome to GreenPlate! You can now subscribe to meal plans.",
+      });
+      
+      return true;
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast({
+        title: "Registration Error",
+        description: "An error occurred during registration. Please try again.",
+        variant: "destructive",
+      });
+      return false;
+    }
   };
 
   const logout = () => {
