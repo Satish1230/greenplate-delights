@@ -1,39 +1,119 @@
 
-import { MongoClient, ServerApiVersion } from 'mongodb';
+// This is a browser-compatible mock for MongoDB
+// In a real app, you would use a backend API to interact with MongoDB
 
-const uri = "mongodb+srv://satishpati96549:a8OEEUAwO1a4FKPj@cluster0.mongodb.net/greenplatedb?retryWrites=true&w=majority";
+// Helper function to simulate database operations
+const simulateDB = () => {
+  // Get or initialize database
+  const getDB = () => {
+    const storedData = localStorage.getItem('mockMongoDB');
+    return storedData ? JSON.parse(storedData) : { users: [] };
+  };
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+  // Save database
+  const saveDB = (data: any) => {
+    localStorage.setItem('mockMongoDB', JSON.stringify(data));
+  };
 
+  return { getDB, saveDB };
+};
+
+// MongoDB connection simulation
 export const connectToMongoDB = async () => {
-  try {
-    // Connect the client to the server
-    await client.connect();
-    console.log("Connected to MongoDB!");
-    return client.db("greenplatedb");
-  } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
-    throw error;
-  }
+  console.log("Connected to MongoDB simulation!");
+  return {
+    collection: (collectionName: string) => getCollection(collectionName)
+  };
 };
 
 export const disconnectFromMongoDB = async () => {
-  try {
-    await client.close();
-    console.log("Disconnected from MongoDB");
-  } catch (error) {
-    console.error("Error disconnecting from MongoDB:", error);
-  }
+  console.log("Disconnected from MongoDB simulation");
+  return true;
 };
 
 export const getCollection = async (collectionName: string) => {
-  const db = await connectToMongoDB();
-  return db.collection(collectionName);
+  const { getDB, saveDB } = simulateDB();
+  
+  // Create collection if it doesn't exist
+  const db = getDB();
+  if (!db[collectionName]) {
+    db[collectionName] = [];
+    saveDB(db);
+  }
+  
+  // Return collection-like object with MongoDB-compatible methods
+  return {
+    findOne: async (query: any) => {
+      const collection = getDB()[collectionName] || [];
+      return collection.find((item: any) => {
+        // Match all properties in the query
+        return Object.keys(query).every(key => item[key] === query[key]);
+      }) || null;
+    },
+    
+    insertOne: async (document: any) => {
+      const db = getDB();
+      const collection = db[collectionName] || [];
+      const id = `id-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const newDocument = { ...document, _id: id };
+      collection.push(newDocument);
+      db[collectionName] = collection;
+      saveDB(db);
+      return { insertedId: id };
+    },
+    
+    find: async (query: any = {}) => {
+      const collection = getDB()[collectionName] || [];
+      const matches = collection.filter((item: any) => {
+        if (Object.keys(query).length === 0) return true;
+        // Match all properties in the query
+        return Object.keys(query).every(key => item[key] === query[key]);
+      });
+      return {
+        toArray: async () => matches
+      };
+    },
+    
+    updateOne: async (query: any, update: any) => {
+      const db = getDB();
+      const collection = db[collectionName] || [];
+      let modified = false;
+      
+      // Find and update the first matching document
+      const updatedCollection = collection.map((item: any) => {
+        if (!modified && Object.keys(query).every(key => item[key] === query[key])) {
+          modified = true;
+          // Apply $set operator
+          if (update.$set) {
+            return { ...item, ...update.$set };
+          }
+          return { ...item, ...update };
+        }
+        return item;
+      });
+      
+      db[collectionName] = updatedCollection;
+      saveDB(db);
+      return { modifiedCount: modified ? 1 : 0 };
+    },
+    
+    deleteOne: async (query: any) => {
+      const db = getDB();
+      const collection = db[collectionName] || [];
+      const initialLength = collection.length;
+      
+      // Filter out the first matching document
+      let deleted = false;
+      const filteredCollection = collection.filter((item: any) => {
+        if (deleted) return true;
+        const shouldDelete = Object.keys(query).every(key => item[key] === query[key]);
+        if (shouldDelete) deleted = true;
+        return !shouldDelete;
+      });
+      
+      db[collectionName] = filteredCollection;
+      saveDB(db);
+      return { deletedCount: initialLength - filteredCollection.length };
+    }
+  };
 };
