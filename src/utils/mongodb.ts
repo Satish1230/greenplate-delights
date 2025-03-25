@@ -3,7 +3,7 @@
 // This file creates browser-compatible functions that make API calls to your MongoDB
 
 // Define API endpoint (replace with your actual API endpoint)
-const API_BASE_URL = "https://your-api-endpoint.com/api";
+const API_BASE_URL = "http://localhost:5000/api";
 
 // MongoDB connection simulation through API
 export const connectToMongoDB = async () => {
