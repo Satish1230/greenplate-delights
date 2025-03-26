@@ -12,10 +12,11 @@ import SubscriptionSection from '@/components/SubscriptionSection';
 import AreYouSection from '@/components/AreYouSection';
 import FSSAIBadge from '@/components/FSSAIBadge';
 import StatCards from '@/components/StatCards';
+import WhatsAppButton from '@/components/WhatsAppButton';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-sage-50">
+    <div className="min-h-screen bg-sage-50 relative">
       <Navbar />
       <Hero />
       <div className="container mx-auto px-4 py-8">
@@ -31,6 +32,7 @@ const Index = () => {
         <FAQSection />
         <CallToAction />
       </div>
+      <WhatsAppButton />
       <Footer />
     </div>
   );
