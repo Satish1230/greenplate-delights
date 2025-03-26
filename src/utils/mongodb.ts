@@ -4,6 +4,15 @@
 
 // Define API endpoint (replace with your actual API endpoint)
 const API_BASE_URL = "http://localhost:5000/api";
+const API_KEY = "greenplate-api-key-1234"; // This should be stored more securely in a production environment
+
+// Helper function to add authorization to requests
+const createAuthHeaders = () => {
+  return {
+    'Content-Type': 'application/json',
+    'X-API-Key': API_KEY
+  };
+};
 
 // MongoDB connection simulation through API
 export const connectToMongoDB = async () => {
@@ -24,9 +33,7 @@ export const getCollection = async (collectionName: string) => {
     console.log(`Ensuring collection ${collectionName} exists...`);
     await fetch(`${API_BASE_URL}/ensureCollection`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: createAuthHeaders(),
       body: JSON.stringify({ 
         collectionName,
         dbName: 'greenplatedb' 
@@ -46,9 +53,7 @@ export const getCollection = async (collectionName: string) => {
         console.log(`Finding document in ${collectionName} with query:`, query);
         const response = await fetch(`${API_BASE_URL}/${collectionName}/findOne`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: createAuthHeaders(),
           body: JSON.stringify({ query }),
         });
         
@@ -70,9 +75,7 @@ export const getCollection = async (collectionName: string) => {
         console.log(`Inserting document into ${collectionName}:`, document);
         const response = await fetch(`${API_BASE_URL}/${collectionName}/insertOne`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: createAuthHeaders(),
           body: JSON.stringify({ document }),
         });
         
@@ -93,9 +96,7 @@ export const getCollection = async (collectionName: string) => {
       try {
         const response = await fetch(`${API_BASE_URL}/${collectionName}/find`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: createAuthHeaders(),
           body: JSON.stringify({ query }),
         });
         
@@ -117,9 +118,7 @@ export const getCollection = async (collectionName: string) => {
       try {
         const response = await fetch(`${API_BASE_URL}/${collectionName}/updateOne`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: createAuthHeaders(),
           body: JSON.stringify({ query, update }),
         });
         
@@ -139,9 +138,7 @@ export const getCollection = async (collectionName: string) => {
       try {
         const response = await fetch(`${API_BASE_URL}/${collectionName}/deleteOne`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: createAuthHeaders(),
           body: JSON.stringify({ query }),
         });
         
