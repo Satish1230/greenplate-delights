@@ -10,6 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/contexts/AuthContext";
+import { ArrowLeft, User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -28,6 +30,9 @@ const Signup = () => {
   const { register } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const isMobile = useIsMobile();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,115 +71,191 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-sage-50">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-lg">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-serif font-bold text-sage-800">
-            Create an Account
-          </h2>
-          <p className="mt-2 text-sm text-sage-600">
-            Join Mealawe and start your meal subscription
-          </p>
+    <div className="min-h-screen flex flex-col bg-sage-50">
+      {/* Back Button for Mobile */}
+      {isMobile && (
+        <div className="fixed top-0 left-0 z-50 w-full bg-white border-b border-sage-100 p-3">
+          <button 
+            onClick={() => navigate("/")}
+            className="flex items-center text-sage-700"
+          >
+            <ArrowLeft size={18} className="mr-1" />
+            <span>Back to Home</span>
+          </button>
         </div>
-        
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+      )}
+      
+      <div className="flex-1 flex items-center justify-center p-4 pt-16">
+        <div className="w-full max-w-md">
+          <div className={`bg-white rounded-2xl shadow-lg overflow-hidden ${isMobile ? 'animate-fade-in' : ''}`}>
+            <div className="p-6 sm:p-8">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-sage-800">
+                  Create an Account
+                </h2>
+                <p className="mt-2 text-sm text-sage-600">
+                  Join Mealawe and start your meal subscription
+                </p>
+              </div>
+              
+              {error && (
+                <Alert variant="destructive" className="mb-6 animate-fade-in">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
-            />
+              
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sage-700">Full Name</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              placeholder="John Doe" 
+                              className="pl-10 h-11 border-sage-200 focus:border-sage-500" 
+                              {...field} 
+                            />
+                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sage-500" />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sage-700">Email</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              placeholder="your.email@example.com" 
+                              className="pl-10 h-11 border-sage-200 focus:border-sage-500" 
+                              {...field} 
+                            />
+                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sage-500" />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sage-700">Phone Number</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              placeholder="1234567890" 
+                              className="pl-10 h-11 border-sage-200 focus:border-sage-500" 
+                              {...field} 
+                            />
+                            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sage-500" />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sage-700">Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              type={showPassword ? "text" : "password"} 
+                              placeholder="******" 
+                              className="pl-10 pr-10 h-11 border-sage-200 focus:border-sage-500" 
+                              {...field} 
+                            />
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sage-500" />
+                            <button 
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sage-500 hover:text-sage-700"
+                            >
+                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sage-700">Confirm Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              type={showConfirmPassword ? "text" : "password"} 
+                              placeholder="******" 
+                              className="pl-10 pr-10 h-11 border-sage-200 focus:border-sage-500" 
+                              {...field} 
+                            />
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sage-500" />
+                            <button 
+                              type="button"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sage-500 hover:text-sage-700"
+                            >
+                              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full h-11 bg-sage-600 hover:bg-sage-700 mt-6 transition-all duration-300"
+                    disabled={loading}
+                  >
+                    {loading ? "Signing Up..." : "Sign Up"}
+                  </Button>
+                </form>
+              </Form>
+              
+              <div className="mt-6 text-center">
+                <p className="text-sm text-sage-600">
+                  Already have an account?{" "}
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="font-medium text-sage-600 hover:text-sage-800"
+                  >
+                    Sign in
+                  </button>
+                </p>
+              </div>
+            </div>
             
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="your.email@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="1234567890" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="******" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="******" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-sage-600 hover:bg-sage-700"
-              disabled={loading}
-            >
-              {loading ? "Signing Up..." : "Sign Up"}
-            </Button>
-          </form>
-        </Form>
-        
-        <div className="mt-4 text-center">
-          <p className="text-sm text-sage-600">
-            Already have an account?{" "}
-            <button
-              onClick={() => navigate("/login")}
-              className="font-medium text-sage-600 hover:text-sage-800"
-            >
-              Sign in
-            </button>
-          </p>
+            <div className="bg-sage-50 px-6 py-4 border-t border-sage-100">
+              <p className="text-xs text-center text-sage-600">
+                By signing up, you agree to our <a href="#" className="underline">Terms of Service</a> and <a href="#" className="underline">Privacy Policy</a>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

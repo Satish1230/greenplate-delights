@@ -16,11 +16,11 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-sage-50 relative">
+    <div className="min-h-screen bg-sage-50 relative overflow-hidden">
       <Navbar />
       <Hero />
-      <div className="container mx-auto px-4 py-8">
-        <div className="my-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="my-6 sm:my-8">
           <FSSAIBadge />
         </div>
         <StatCards />
