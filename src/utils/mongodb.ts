@@ -1,3 +1,4 @@
+
 // MongoDB utility functions for API requests
 // This file creates browser-compatible functions that make API calls to your MongoDB
 
@@ -20,14 +21,18 @@ export const disconnectFromMongoDB = async () => {
 export const getCollection = async (collectionName: string) => {
   // Ensure collection exists by making a createCollection call first
   try {
+    console.log(`Ensuring collection ${collectionName} exists...`);
     await fetch(`${API_BASE_URL}/ensureCollection`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ collectionName }),
+      body: JSON.stringify({ 
+        collectionName,
+        dbName: 'greenplatedb' 
+      }),
     });
-    console.log(`Ensured collection ${collectionName} exists`);
+    console.log(`Ensured collection ${collectionName} exists in greenplatedb`);
   } catch (error) {
     console.warn(`Could not ensure collection ${collectionName} exists:`, error);
     // Continue anyway, as collection might already exist
@@ -38,6 +43,7 @@ export const getCollection = async (collectionName: string) => {
   return {
     findOne: async (query: any) => {
       try {
+        console.log(`Finding document in ${collectionName} with query:`, query);
         const response = await fetch(`${API_BASE_URL}/${collectionName}/findOne`, {
           method: 'POST',
           headers: {
@@ -51,6 +57,7 @@ export const getCollection = async (collectionName: string) => {
         }
         
         const result = await response.json();
+        console.log(`Found document:`, result.data);
         return result.data;
       } catch (error) {
         console.error("Error in findOne:", error);
