@@ -1,4 +1,3 @@
-
 // MongoDB utility functions for API requests
 // This file creates browser-compatible functions that make API calls to your MongoDB
 
@@ -19,6 +18,21 @@ export const disconnectFromMongoDB = async () => {
 };
 
 export const getCollection = async (collectionName: string) => {
+  // Ensure collection exists by making a createCollection call first
+  try {
+    await fetch(`${API_BASE_URL}/ensureCollection`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ collectionName }),
+    });
+    console.log(`Ensured collection ${collectionName} exists`);
+  } catch (error) {
+    console.warn(`Could not ensure collection ${collectionName} exists:`, error);
+    // Continue anyway, as collection might already exist
+  }
+
   // Return collection-like object with MongoDB-compatible methods
   // These methods make API calls to your backend server
   return {
@@ -46,6 +60,7 @@ export const getCollection = async (collectionName: string) => {
     
     insertOne: async (document: any) => {
       try {
+        console.log(`Inserting document into ${collectionName}:`, document);
         const response = await fetch(`${API_BASE_URL}/${collectionName}/insertOne`, {
           method: 'POST',
           headers: {
@@ -59,6 +74,7 @@ export const getCollection = async (collectionName: string) => {
         }
         
         const result = await response.json();
+        console.log(`Document inserted successfully, ID: ${result.insertedId}`);
         return { insertedId: result.insertedId };
       } catch (error) {
         console.error("Error in insertOne:", error);
