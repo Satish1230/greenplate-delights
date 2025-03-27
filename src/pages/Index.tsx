@@ -13,6 +13,7 @@ import AreYouSection from '@/components/AreYouSection';
 import FSSAIBadge from '@/components/FSSAIBadge';
 import StatCards from '@/components/StatCards';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import ScratchCard from '@/components/ScratchCard';
 
 const Index = () => {
   return (
@@ -30,6 +31,7 @@ const Index = () => {
         <SubscriptionSection />
         <Testimonials />
         <FAQSection />
+        <ScratchCard/>
         <CallToAction />
       </div>
       <WhatsAppButton />
