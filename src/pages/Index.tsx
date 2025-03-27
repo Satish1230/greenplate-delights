@@ -14,6 +14,7 @@ import FSSAIBadge from '@/components/FSSAIBadge';
 import StatCards from '@/components/StatCards';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import RecipeSection from '@/components/RecipeSection';
+import QualityPromise from '@/components/QualityPromise';
 
 const Index = () => {
   return (
@@ -25,6 +26,7 @@ const Index = () => {
           <FSSAIBadge />
         </div>
         <StatCards />
+        <QualityPromise />
         <FeaturedPlans />
         <RecipeSection />
         <About />
