@@ -13,6 +13,7 @@ import AreYouSection from '@/components/AreYouSection';
 import FSSAIBadge from '@/components/FSSAIBadge';
 import StatCards from '@/components/StatCards';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import RecipeSection from '@/components/RecipeSection';
 
 const Index = () => {
   return (
@@ -25,6 +26,7 @@ const Index = () => {
         </div>
         <StatCards />
         <FeaturedPlans />
+        <RecipeSection />
         <About />
         <AreYouSection />
         <SubscriptionSection />

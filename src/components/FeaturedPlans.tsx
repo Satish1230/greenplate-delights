@@ -2,6 +2,7 @@
 import React from 'react';
 import { Check, ArrowRight, BabyIcon, Salad, Briefcase } from 'lucide-react';
 import { useInView } from '@/utils/animations';
+import { useNavigate } from 'react-router-dom';
 
 const planData = [
   {
@@ -18,7 +19,8 @@ const planData = [
       'Incorporates traditional postnatal recipes'
     ],
     image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    color: 'bg-[#f8efe6]'
+    color: 'bg-[#f8efe6]',
+    route: '/maternity-plan'
   },
   {
     id: 'fitness',
@@ -34,7 +36,8 @@ const planData = [
       'Portion controlled for optimal results'
     ],
     image: 'https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    color: 'bg-[#e6f5ed]'
+    color: 'bg-[#e6f5ed]',
+    route: '/fitness-keto-plan'
   },
   {
     id: 'corporate',
@@ -50,12 +53,18 @@ const planData = [
       'Sustainable packaging'
     ],
     image: 'https://images.unsplash.com/photo-1543352634-a1c51d9f1fa7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    color: 'bg-[#e6f0f8]'
+    color: 'bg-[#e6f0f8]',
+    route: '/corporate-plan'
   }
 ];
 
 const FeaturedPlans = () => {
   const { ref, isInView } = useInView();
+  const navigate = useNavigate();
+
+  const handleChoosePlan = (route: string) => {
+    navigate(route);
+  };
 
   return (
     <section id="plans" className="py-20 md:py-32 relative bg-sage-50/50">
@@ -105,13 +114,13 @@ const FeaturedPlans = () => {
                   </ul>
                 </div>
                 
-                <a 
-                  href="#subscribe" 
+                <button 
+                  onClick={() => handleChoosePlan(plan.route)} 
                   className="premium-button w-full flex items-center justify-center gap-2 group"
                 >
                   Choose Plan
                   <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-                </a>
+                </button>
               </div>
             </div>
           ))}

@@ -26,13 +26,13 @@ const WhatsAppButton = () => {
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
       {expanded && (
-        <div className="bg-white p-3 rounded-lg shadow-lg animate-fade-in mb-2 max-w-[180px]">
-          <p className="text-sage-800 text-sm mb-2">Need help with your meals?</p>
+        <div className="bg-white p-3 rounded-lg shadow-lg animate-fade-in mb-2 max-w-[240px] sm:max-w-[280px]">
+          <p className="text-sage-800 text-sm sm:text-base mb-2">Need help with your meals? Let's chat!</p>
           <Button 
             onClick={handleWhatsAppClick}
-            className="bg-green-500 hover:bg-green-600 text-white w-full text-xs py-1 h-auto"
+            className="bg-green-500 hover:bg-green-600 text-white w-full py-1.5 h-auto text-xs sm:text-sm"
           >
-            Chat with us
+            Chat with our nutrition expert
           </Button>
         </div>
       )}
@@ -43,9 +43,9 @@ const WhatsAppButton = () => {
             onClick={() => setExpanded(false)}
             variant="outline"
             size="icon"
-            className="rounded-full w-8 h-8 bg-white hover:bg-sage-100 shadow-md flex items-center justify-center text-sage-600"
+            className="rounded-full w-8 h-8 sm:w-10 sm:h-10 bg-white hover:bg-sage-100 shadow-md flex items-center justify-center text-sage-600"
           >
-            <X size={16} />
+            <X size={isMobile ? 16 : 20} />
           </Button>
         )}
         
@@ -58,7 +58,7 @@ const WhatsAppButton = () => {
             }
           }}
           className={`rounded-full shadow-lg ${
-            isMobile ? 'w-12 h-12' : 'w-14 h-14'
+            isMobile ? 'w-12 h-12 sm:w-14 sm:h-14' : 'w-14 h-14 sm:w-16 sm:h-16'
           } bg-green-500 hover:bg-green-600 flex items-center justify-center p-0 transition-all duration-300 ${
             expanded ? 'animate-pulse' : ''
           }`}

@@ -9,6 +9,9 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import MaternityPlan from "./pages/MaternityPlan";
+import FitnessKetoPlan from "./pages/FitnessKetoPlan";
+import CorporatePlan from "./pages/CorporatePlan";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -25,6 +28,9 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/maternity-plan" element={<MaternityPlan />} />
+            <Route path="/fitness-keto-plan" element={<FitnessKetoPlan />} />
+            <Route path="/corporate-plan" element={<CorporatePlan />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
